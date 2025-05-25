@@ -8,9 +8,9 @@ set_defaults(reset_camera=Camera.CENTER, helper_scale=5)
 show_clear()
 
 fillet_radius = 0.2 * MM
-width_peg = 4 * MM
-length_peg = 7 * MM
-height_peg = 7 * MM
+width_peg = 4.8 * MM
+length_peg = 7.5 * MM
+height_peg = 8 * MM
 
 big_radius = 5.5 * MM
 small_radius = 3.5 * MM
@@ -18,9 +18,9 @@ small_radius = 3.5 * MM
 top_radius = small_radius
 total_heigth = 44 * MM
 distance_loft = 3 * MM
-
-slot_width = 2.5 * MM
+slot_width = 1.5 * MM
 slot_length = total_heigth - distance_loft - height_peg
+slot_offset = 1 * MM
 
 with BuildPart() as peg:
     with BuildSketch() as rect_sk:
@@ -60,15 +60,17 @@ with BuildPart() as peg:
     with BuildSketch(
         Plane(origin=vertical_edge_of_loft @ 0.5, z_dir=(1, 0, 0)),
     ) as slot_sk:
-        SlotOverall(slot_length, slot_width)
+        with Locations((slot_offset, 0)):
+            SlotOverall(slot_length, slot_width)
         with Locations((slot_length / 2, 0)):
             Rectangle(slot_width, slot_width)
-    extrude(amount=-top_radius + 0.5 * MM, mode=Mode.SUBTRACT)
+    extrude(amount=-top_radius + 1 * MM, mode=Mode.SUBTRACT)
 
     with BuildSketch(
         Plane(origin=vertical_edge_of_loft @ 1, z_dir=(1, 0, 0)),
     ) as hole_sk:
-        Circle(slot_width / 2 - 0.2, align=(Align.MIN, Align.CENTER))
+        with Locations((slot_offset, 0)):
+            Circle(slot_width / 2 - 0.2, align=(Align.MIN, Align.CENTER))
     extrude(amount=-top_radius - 1 * MM, mode=Mode.SUBTRACT)
 
 # show_object(peg.part, clear=True)
